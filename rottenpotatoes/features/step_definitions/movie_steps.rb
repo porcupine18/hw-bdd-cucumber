@@ -3,6 +3,7 @@
 Given /the following movies exist/ do |movies_table|
   movies_table.hashes.each do |movie|
     Movie.create(movie)
+  end
 end
 
 Then /(.*) seed movies should exist/ do | n_seeds |
@@ -13,8 +14,18 @@ end
 #   on the same page
 
 Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
+  
+  if !(e1.in?(page.body)) or !(e2.in?(page.body))
+    fail "Condition not met"
   end
-  fail "Unimplemented"
+
+  e1_idx = page.body.index(e1)
+  e2_idx = page.body.index(e2)
+  
+  if !(e1_idx < e2_idx)
+    fail "Condition not met"
+  end
+  
 end
 
 # Make it easier to express checking or unchecking several boxes at once
@@ -22,15 +33,19 @@ end
 #  "When I check the following ratings: G"
 
 When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
-  rating_list.split(", ").each do |option|
+  
+  rating_list.split(',').each do |option|
+    
+    rating = "ratings[#{option.strip}]"
     
     if uncheck
-      uncheck(option) # directly used from websteps
+      uncheck(rating)
     else
-      check(option)   # directly used from websteps
+      check(rating)
     end
     
-  end  
+  end
+
 end
 
 Then /I should see all the movies/ do
