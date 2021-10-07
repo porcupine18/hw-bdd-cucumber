@@ -13,6 +13,8 @@ end
 #   on the same page
 
 Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
+  end
+  fail "Unimplemented"
 end
 
 # Make it easier to express checking or unchecking several boxes at once
@@ -20,7 +22,23 @@ end
 #  "When I check the following ratings: G"
 
 When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
+  rating_list.split(", ").each do |option|
+    
+    if uncheck
+      uncheck(option) # directly used from websteps
+    else
+      check(option)   # directly used from websteps
+    end
+    
+  end  
 end
 
 Then /I should see all the movies/ do
+  
+  Movie.all.each do |movie|
+    
+    step "I should see \"#{movie.title}\""
+  
+  end
+  
 end
